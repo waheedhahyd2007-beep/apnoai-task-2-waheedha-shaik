@@ -1,0 +1,265 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Waheedha Shaik | ApnoAI Task 2</title>
+
+  <!-- React 18 -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <!-- Babel for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.20);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+    }
+
+    .glass-dark {
+      background: rgba(20, 20, 30, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .avatar {
+      width: 128px;
+      height: 128px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 4px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    button, a {
+      -webkit-tap-highlight-color: transparent;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    // ProfileCard receives data through props.
+    function ProfileCard({
+      name,
+      role,
+      bio,
+      skills,
+      avatar,
+      github,
+      twitter,
+      linkedin
+    }) {
+      // State controls the theme.
+      const [isDark, setIsDark] = useState(false);
+
+      // State controls the Connect button.
+      const [isConnected, setIsConnected] = useState(false);
+
+      // Custom feature: Like button.
+      const [likes, setLikes] = useState(0);
+
+      const toggleTheme = () => {
+        setIsDark(previous => !previous);
+      };
+
+      const toggleConnect = () => {
+        setIsConnected(previous => !previous);
+      };
+
+      return (
+        <main
+          className={`min-h-screen w-full flex items-center justify-center p-5 transition-colors duration-500 ${
+            isDark
+              ? "bg-gray-950"
+              : "bg-gradient-to-br from-purple-400 via-pink-400 to-orange-300"
+          }`}
+        >
+          {/* Theme toggle */}
+          <button
+            onClick={toggleTheme}
+            title="Toggle dark mode"
+            aria-label="Toggle dark mode"
+            className="fixed top-5 right-5 z-10 rounded-full p-3 text-2xl shadow-lg glass hover:scale-110 transition-transform"
+          >
+            {isDark ? "☀️" : "🌙"}
+          </button>
+
+          {/* Profile card */}
+          <section
+            className={`w-full max-w-md rounded-3xl p-7 sm:p-8 shadow-2xl transition-colors duration-500 ${
+              isDark ? "glass-dark text-white" : "glass text-gray-900"
+            }`}
+          >
+            {/* Avatar with fallback if the image is missing */}
+            <div className="flex justify-center mb-6">
+              <img
+                src={avatar}
+                alt={`${name}'s profile photo`}
+                className="avatar"
+                onError={(event) => {
+                  event.currentTarget.onerror = null;
+                  event.currentTarget.src =
+                    "https://placehold.co/256x256/7c3aed/ffffff?text=WS";
+                }}
+              />
+            </div>
+
+            {/* Name and role */}
+            <div className="text-center mb-5">
+              <h1 className="text-3xl font-bold mb-2">
+                {name}
+              </h1>
+
+              <p className={`text-lg ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                {role}
+              </p>
+            </div>
+
+            {/* Bio */}
+            <p className={`text-center leading-relaxed mb-6 ${
+              isDark ? "text-gray-300" : "text-gray-800"
+            }`}>
+              {bio}
+            </p>
+
+            {/* Skills from props */}
+            <div className="flex flex-wrap gap-2 justify-center mb-6">
+              {skills.map((skill, index) => (
+                <span
+                  key={index}
+                  className={`rounded-full px-4 py-2 text-sm font-medium border ${
+                    isDark
+                      ? "bg-white/10 border-white/20 text-white"
+                      : "bg-white/60 border-white/40 text-gray-900"
+                  }`}
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+
+            {/* Connect button */}
+            <button
+              onClick={toggleConnect}
+              className={`w-full rounded-xl py-3 font-semibold mb-4 transition-all hover:scale-[1.02] ${
+                isConnected
+                  ? "bg-green-500 text-white"
+                  : isDark
+                    ? "bg-white text-gray-900 hover:bg-gray-200"
+                    : "bg-gray-900 text-white hover:bg-gray-800"
+              }`}
+            >
+              {isConnected ? "✓ Connected" : "Connect"}
+            </button>
+
+            {/* Custom Like feature */}
+            <button
+              onClick={() => setLikes(previous => previous + 1)}
+              aria-label="Like profile"
+              className={`w-full rounded-xl py-3 font-semibold mb-6 transition-all hover:scale-[1.02] ${
+                isDark
+                  ? "bg-pink-500/20 text-pink-300 hover:bg-pink-500/30"
+                  : "bg-pink-100 text-pink-700 hover:bg-pink-200"
+              }`}
+            >
+              ❤️ Like {likes > 0 ? `(${likes})` : ""}
+            </button>
+
+            {/* Social links */}
+            <div className="flex flex-wrap justify-center gap-3">
+              {github && (
+                <a
+                  href={github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`rounded-xl px-4 py-2 font-medium transition hover:scale-105 ${
+                    isDark ? "bg-white/10 hover:bg-white/20" : "bg-white/60 hover:bg-white/80"
+                  }`}
+                >
+                  GitHub ↗
+                </a>
+              )}
+
+              {linkedin && (
+                <a
+                  href={linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`rounded-xl px-4 py-2 font-medium transition hover:scale-105 ${
+                    isDark ? "bg-white/10 hover:bg-white/20" : "bg-white/60 hover:bg-white/80"
+                  }`}
+                >
+                  LinkedIn ↗
+                </a>
+              )}
+
+              {twitter && (
+                <a
+                  href={twitter}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`rounded-xl px-4 py-2 font-medium transition hover:scale-105 ${
+                    isDark ? "bg-white/10 hover:bg-white/20" : "bg-white/60 hover:bg-white/80"
+                  }`}
+                >
+                  Twitter / X ↗
+                </a>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className={`mt-6 pt-5 border-t text-center ${
+              isDark ? "border-white/20 text-gray-400" : "border-white/40 text-gray-700"
+            }`}>
+              <p className="text-xs">
+                Built with React 18 + Tailwind CSS
+              </p>
+              <p className="text-xs mt-1">
+                ApnoAI Internship — Task 2
+              </p>
+            </div>
+          </section>
+        </main>
+      );
+    }
+
+    // Customize your profile here.
+    // These values are props passed into ProfileCard.
+    ReactDOM.createRoot(document.getElementById("root")).render(
+      <ProfileCard
+        name="Waheedha Shaik"
+        role="AI & ML Student | Web Development Intern"
+        bio="I am a Computer Science student specializing in AI and Machine Learning, passionate about building useful applications and exploring modern web technologies."
+        skills={["Python", "Java", "HTML", "CSS", "JavaScript", "AI & ML"]}
+        avatar="./profile.jpeg"
+        github="https://github.com/waheedhahyd2007-beep"
+        twitter="https://twitter.com"
+        linkedin="https://www.linkedin.com/in/waheedha-shaik-56713b356/"
+      />
+    );
+  </script>
+</body>
+</html>
